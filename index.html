@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>公路车时钟</title>
+    <meta
+      name="description"
+      content="一个动态的时钟，显示当前系统时间，带有进度条和单车人物标记。"
+    />
+    <meta name="keywords" content="时钟, 当前时间, 动态时钟, 进度条, 单车" />
+    <link
+      rel="icon"
+      href="2b5bac0529924a6ba5904f253fb9fc69.gif"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient(to bottom, #87ceeb, #a8d8b9);
+        font-family: 'Roboto', sans-serif;
+      }
+      #clock-container {
+        text-align: center;
+        padding: 40px;
+        border: 4px solid #4a4a4a;
+        border-radius: 15px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.9),
+          rgba(240, 240, 240, 0.9)
+        );
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2),
+          0 10px 30px rgba(0, 0, 0, 0.2);
+        color: #333;
+        width: 90%;
+        max-width: 800px;
+        min-width: 300px;
+        box-sizing: border-box;
+        overflow: hidden;
+        transition: transform 0.3s;
+      }
+
+      #clock {
+        font-size: 80px;
+        letter-spacing: 2px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      #date {
+        font-size: 28px;
+        margin-top: 10px;
+        font-style: italic;
+        color: #555;
+      }
+
+      #progress-container {
+        position: relative;
+        height: 20px;
+        background-color: #e0e0e0;
+        border-radius: 10px;
+        margin-top: 20px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      #progress {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6347, #ffd700);
+        border-radius: 10px;
+        width: 0%;
+        transition: width 0.5s;
+      }
+
+      #biker {
+        position: absolute;
+        top: -5px;
+        left: 0;
+        width: 30px;
+        height: auto;
+        transition: left 0.5s;
+      }
+
+      #clock-container:hover {
+        transform: scale(1.05);
+      }
+
+      /* 媒体查询：适应移动端 */
+      @media (max-width: 600px) {
+        #clock {
+          font-size: 48px;
+        }
+        #date {
+          font-size: 20px;
+        }
+        #clock-container {
+          padding: 10px;
+        }
+      }
+
+      /* 媒体查询：适应平板（包括 iPad） */
+      @media (min-width: 601px) and (max-width: 900px) {
+        #clock {
+          font-size: 72px;
+        }
+        #date {
+          font-size: 26px;
+        }
+        #clock-container {
+          padding: 20px;
+        }
+      }
+
+      /* 媒体查询：适应大屏幕 */
+      @media (min-width: 901px) {
+        #clock {
+          font-size: 80px;
+        }
+        #date {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="clock-container" role="main">
+      <h1 id="clock">00:00:00</h1>
+      <div id="date">2023-10-01</div>
+      <div id="progress-container" aria-label="时间进度条">
+        <div id="progress" aria-hidden="true"></div>
+        <img
+          id="biker"
+          src="2b5bac0529924a6ba5904f253fb9fc69.gif"
+          alt="骑自行车的人物"
+        />
+      </div>
+    </div>
+    <script>
+      // 获取当前系统时间的辅助函数
+      function getCurrentTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+      }
+
+      // 更新时钟的函数
+      function updateClock() {
+        // 获取当前时间（实际系统时间）
+        const currentTime = getCurrentTime();
+        document.getElementById('clock').textContent = currentTime; // 更新显示的时间
+
+        // 更新日期
+        const nowDate = new Date();
+        const date = `${nowDate.getFullYear()}-${String(
+          nowDate.getMonth() + 1
+        ).padStart(2, '0')}-${String(nowDate.getDate()).padStart(2, '0')}`;
+        document.getElementById('date').textContent = date; // 更新日期
+
+        // 更新进度条
+        const totalSecondsInDay = 24 * 60 * 60; // 一天的总秒数
+        const currentSeconds =
+          nowDate.getHours() * 3600 +
+          nowDate.getMinutes() * 60 +
+          nowDate.getSeconds(); // 当前秒数
+        const progressPercentage = (currentSeconds / totalSecondsInDay) * 100; // 计算进度百分比
+        document.getElementById(
+          'progress'
+        ).style.width = `${progressPercentage}%`; // 更新进度条宽度
+
+        // 更新单车人物位置
+        const biker = document.getElementById('biker');
+        biker.style.left = `${progressPercentage}%`; // 更新单车人物位置
+
+        // 使用 requestAnimationFrame 来确保平滑更新
+        requestAnimationFrame(updateClock);
+      }
+
+      // 启动时钟
+      updateClock();
+    </script>
+  </body>
+</html>
