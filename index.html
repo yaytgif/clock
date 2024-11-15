@@ -56,10 +56,10 @@
       }
 
       #date {
-        font-size: 28px;
-        margin-top: 10px;
+        font-size: 24px;
         font-style: italic;
         color: #555;
+        letter-spacing: 1px;
       }
 
       #progress-container {
@@ -133,7 +133,7 @@
   <body>
     <div id="clock-container" role="main">
       <h1 id="clock">00:00:00</h1>
-      <div id="date">2023-10-01</div>
+      <div id="date">2023年10月01日</div>
       <div id="progress-container" aria-label="时间进度条">
         <div id="progress" aria-hidden="true"></div>
         <img
@@ -161,9 +161,9 @@
 
         // 更新日期
         const nowDate = new Date();
-        const date = `${nowDate.getFullYear()}-${String(
+        const date = `${nowDate.getFullYear()}年${String(
           nowDate.getMonth() + 1
-        ).padStart(2, '0')}-${String(nowDate.getDate()).padStart(2, '0')}`;
+        ).padStart(2, '0')}月${String(nowDate.getDate()).padStart(2, '0')}日`;
         document.getElementById('date').textContent = date; // 更新日期
 
         // 更新进度条
